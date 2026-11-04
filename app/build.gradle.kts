@@ -19,8 +19,12 @@ android {
         // Locked-link AES key (base64, 32 bytes) from the AMIERNG_LOCK_KEY Actions secret.
         // The fallback is a public development key so builds without the secret still compile;
         // links made with it only open in builds that also lack the secret.
-        val lockKey = System.getenv("AMIERNG_LOCK_KEY")?.trim()?.takeIf { it.isNotEmpty() }
+        val lockKey = System.getenv("AMIERNG_LOCK_KEY")?.filterNot { it.isWhitespace() }?.takeIf { it.isNotEmpty() }
             ?: "NpqzMMlHpq1kWIEZd4OTpDHXykDWKFbF1z7pa/vpp9E="
+        // Never print the value: it is a secret.
+        require(runCatching { java.util.Base64.getDecoder().decode(lockKey).size == 32 }.getOrDefault(false)) {
+            "AMIERNG_LOCK_KEY must be one line: the base64 of a 32-byte key, with no other text."
+        }
         buildConfigField("String", "LOCK_KEY", "\"$lockKey\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
