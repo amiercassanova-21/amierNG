@@ -63,7 +63,7 @@ import com.v2ray.ang.dto.entities.ProfileItem
 import com.v2ray.ang.extension.isComplexType
 
 /**
- * ExpressVPN-inspired hero connection dashboard for behradNG.
+ * ExpressVPN-inspired hero connection dashboard for amierNG.
  */
 @Composable
 fun ExpressConnectDashboard(
@@ -350,7 +350,7 @@ fun ExpressConnectDashboard(
                 // Location / Server Info
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "SELECTED CONFIGURATION",
+                        text = stringResource(R.string.dashboard_selected_configuration),
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.sp
@@ -360,8 +360,8 @@ fun ExpressConnectDashboard(
 
                     Spacer(modifier = Modifier.height(3.dp))
 
-                    val serverTitle = selectedProfile?.remarks?.ifBlank { "Default Server" }
-                        ?: if (selectedGuid.isNullOrEmpty()) "No server selected" else "Config: ${selectedGuid.take(8)}"
+                    val serverTitle = selectedProfile?.remarks?.ifBlank { stringResource(R.string.dashboard_default_server) }
+                        ?: if (selectedGuid.isNullOrEmpty()) stringResource(R.string.dashboard_no_server_selected) else stringResource(R.string.dashboard_config_short, selectedGuid.take(8))
 
                     Text(
                         text = serverTitle,
@@ -408,8 +408,8 @@ fun ExpressConnectDashboard(
                         // Ping badge
                         val pingText = when {
                             selectedPing > 0L -> "$selectedPing ms"
-                            selectedPing < 0L -> "Timeout"
-                            else -> "Untested"
+                            selectedPing < 0L -> stringResource(R.string.dashboard_ping_timeout)
+                            else -> stringResource(R.string.dashboard_ping_untested)
                         }
                         val pingColor = when {
                             selectedPing > 0L -> activeEmerald
@@ -433,7 +433,7 @@ fun ExpressConnectDashboard(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_flash_on_24dp),
-                        contentDescription = "Test Ping",
+                        contentDescription = stringResource(R.string.dashboard_test_ping),
                         tint = activeEmerald,
                         modifier = Modifier.size(20.dp)
                     )
@@ -442,7 +442,7 @@ fun ExpressConnectDashboard(
                 // Arrow pointing right
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_back_24dp),
-                    contentDescription = "Change Location",
+                    contentDescription = stringResource(R.string.dashboard_change_location),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier
                         .size(20.dp)
@@ -460,25 +460,25 @@ fun ExpressConnectDashboard(
         ) {
             ExpressActionChip(
                 iconRes = R.drawable.ic_add_24dp,
-                label = "+ Add Config",
+                label = stringResource(R.string.dashboard_add_config),
                 onClick = onAddConfig,
                 modifier = Modifier.weight(1f)
             )
             ExpressActionChip(
                 iconRes = R.drawable.ic_flash_on_24dp,
-                label = "Speed Test",
+                label = stringResource(R.string.dashboard_speed_test),
                 onClick = onTestPing,
                 modifier = Modifier.weight(1f)
             )
             ExpressActionChip(
                 iconRes = R.drawable.ic_routing_24dp,
-                label = "Routing",
+                label = stringResource(R.string.dashboard_routing),
                 onClick = onRoutingClick,
                 modifier = Modifier.weight(1f)
             )
             ExpressActionChip(
                 iconRes = R.drawable.ic_per_apps_24dp,
-                label = "Split Tunnel",
+                label = stringResource(R.string.dashboard_split_tunnel),
                 onClick = onPerAppClick,
                 modifier = Modifier.weight(1f)
             )
@@ -510,13 +510,13 @@ fun ExpressConnectDashboard(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "behradNG Security Shield",
+                            text = stringResource(R.string.dashboard_security_shield, stringResource(R.string.app_name)),
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     Text(
-                        text = if (isRunning) "ACTIVE" else "STANDBY",
+                        text = stringResource(if (isRunning) R.string.dashboard_shield_active else R.string.dashboard_shield_standby),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black),
                         color = if (isRunning) activeEmerald else MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -525,7 +525,7 @@ fun ExpressConnectDashboard(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = if (statusText.isNotBlank()) statusText else "Client ready. Add or select a configuration to start.",
+                    text = if (statusText.isNotBlank()) statusText else stringResource(R.string.dashboard_client_ready),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

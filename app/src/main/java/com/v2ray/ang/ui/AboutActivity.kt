@@ -123,12 +123,12 @@ fun AboutScreen(
                     }
                     Spacer(modifier = Modifier.height(14.dp))
                     Text(
-                        text = "behradNG",
+                        text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "Express-Inspired Fast & Secure VPN Client",
+                        text = stringResource(R.string.about_tagline),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

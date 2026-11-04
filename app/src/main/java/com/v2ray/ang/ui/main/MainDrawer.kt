@@ -124,7 +124,7 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                             color = Color.White
                         )
                         Text(
-                            text = "High-Speed & Secure VPN Protection",
+                            text = stringResource(R.string.drawer_tagline),
                             style = MaterialTheme.typography.bodySmall,
                             color = Color.White.copy(alpha = 0.75f)
                         )

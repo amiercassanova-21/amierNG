@@ -1,4 +1,4 @@
-name: Build and Release behradNG
+name: Build and Release amierNG
 
 on:
   pull_request:
@@ -192,12 +192,12 @@ jobs:
       run: |
         if [ "${{ github.event_name }}" = "pull_request" ]; then
           echo "APK_FILE=V2rayNG/app/build/outputs/apk/debug/app-debug.apk" >> "$GITHUB_ENV"
-          echo "APK_PACKAGE=com.v2ray.ang.behradng.debug" >> "$GITHUB_ENV"
-          echo "APK_ARTIFACT=behradNG-${{ env.RELEASE_TAG }}-debug" >> "$GITHUB_ENV"
+          echo "APK_PACKAGE=com.amier.ng.debug" >> "$GITHUB_ENV"
+          echo "APK_ARTIFACT=amierNG-${{ env.RELEASE_TAG }}-debug" >> "$GITHUB_ENV"
         else
           echo "APK_FILE=V2rayNG/app/build/outputs/apk/release/app-release.apk" >> "$GITHUB_ENV"
-          echo "APK_PACKAGE=com.v2ray.ang.behradng" >> "$GITHUB_ENV"
-          echo "APK_ARTIFACT=behradNG-${{ env.RELEASE_TAG }}" >> "$GITHUB_ENV"
+          echo "APK_PACKAGE=com.amier.ng" >> "$GITHUB_ENV"
+          echo "APK_ARTIFACT=amierNG-${{ env.RELEASE_TAG }}" >> "$GITHUB_ENV"
         fi
 
     - name: Verify APK signature and package
@@ -268,9 +268,9 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ env.RELEASE_TAG }}
-        name: "behradNG ${{ env.RELEASE_TAG }}"
+        name: "amierNG ${{ env.RELEASE_TAG }}"
         body: |
-          # 🚀 behradNG ${{ env.RELEASE_TAG }}
+          # 🚀 amierNG ${{ env.RELEASE_TAG }}
 
           Fast & Secure V2Ray / Xray client for Android with an **ExpressVPN-inspired** interface.
 
@@ -281,7 +281,7 @@ jobs:
           - 🛡️ **Advanced Security**: Split tunneling (Per-App Proxy), Routing rules (Bypass LAN / Global), and Custom DNS.
 
           ### 📥 Download
-          Download the attached `behradNG-${{ env.RELEASE_TAG }}.apk` below and install it directly on your Android device (Android 7.0+).
+          Download the attached `amierNG-${{ env.RELEASE_TAG }}.apk` below and install it directly on your Android device (Android 7.0+).
 
           ---
           *Automated Release from commit: ${{ github.sha }}*

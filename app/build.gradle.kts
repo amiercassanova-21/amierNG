@@ -10,12 +10,12 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.v2ray.ang.behradng"
+        applicationId = "com.amier.ng"
         minSdk = 24
         targetSdk = 36
         versionCode = 4000775
         versionName = "3.0.0"
-        buildConfigField("String", "DISTRIBUTION", "\"behradNG\"")
+        buildConfigField("String", "DISTRIBUTION", "\"amierNG\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -87,7 +87,8 @@ android {
             "ar",
             "az",
             "bn",
-            "bqi-rIR"
+            "bqi-rIR",
+            "in"
         )
     }
 

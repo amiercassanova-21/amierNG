@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">behradNG</string>
+    <string name="app_name" translatable="false">amierNG</string>
     <string name="app_widget_name">Switch</string>
     <string name="app_tile_name">Switch</string>
     <string name="app_tile_first_use">Add a profile in the app before using this feature.</string>
@@ -14,7 +14,7 @@
     <string name="pull_down_to_refresh">Please pull down to refresh!</string>
 
     <!-- Notifications -->
-    <string name="notification_channel_service">behradNG service</string>
+    <string name="notification_channel_service">amierNG service</string>
     <string name="notification_channel_subscription_updates">Subscription updates</string>
     <string name="notification_channel_connection_checks">Connection checks</string>
     <string name="notification_action_stop_v2ray">Stop</string>
@@ -562,4 +562,25 @@
     <string name="value_unknown">unknown</string>
 
     <string name="title_configs">Configs</string>
+
+    <!-- amierNG dashboard, drawer and About texts -->
+    <string name="dashboard_selected_configuration">SELECTED CONFIGURATION</string>
+    <string name="dashboard_default_server">Default Server</string>
+    <string name="dashboard_no_server_selected">No server selected</string>
+    <string name="dashboard_config_short">Config: %1$s</string>
+    <string name="dashboard_ping_timeout">Timeout</string>
+    <string name="dashboard_ping_untested">Untested</string>
+    <string name="dashboard_test_ping">Test Ping</string>
+    <string name="dashboard_change_location">Change Location</string>
+    <string name="dashboard_add_config">+ Add Config</string>
+    <string name="dashboard_speed_test">Speed Test</string>
+    <string name="dashboard_routing">Routing</string>
+    <string name="dashboard_split_tunnel">Split Tunnel</string>
+    <string name="dashboard_security_shield">%1$s Security Shield</string>
+    <string name="dashboard_shield_active">ACTIVE</string>
+    <string name="dashboard_shield_standby">STANDBY</string>
+    <string name="dashboard_client_ready">Client ready. Add or select a configuration to start.</string>
+    <string name="drawer_tagline">High-Speed &amp; Secure VPN Protection</string>
+    <string name="about_tagline">Express-Inspired Fast &amp; Secure VPN Client</string>
+
 </resources>

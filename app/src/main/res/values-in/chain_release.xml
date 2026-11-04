@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="aether_chain_invalid">Gunakan minimal dua profil berbeda. Aether hanya boleh sekali, sebagai hop pertama.</string>
+    <string name="aether_chain_hint">Rantai Aether: Aether → Xray → Internet. Mode root tidak didukung.</string>
+</resources>

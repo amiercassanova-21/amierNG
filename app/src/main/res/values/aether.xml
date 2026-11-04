@@ -57,10 +57,10 @@
         <item>gfw</item>
         <item>aggressive</item>
     </string-array>
-    <string name="aether_permission_error">Allow behradNG to create a VPN connection, then retry.</string>
-    <string name="aether_vpn_error">behradNG could not create the VPN interface. Check VPN permissions and per-app settings.</string>
+    <string name="aether_permission_error">Allow amierNG to create a VPN connection, then retry.</string>
+    <string name="aether_vpn_error">amierNG could not create the VPN interface. Check VPN permissions and per-app settings.</string>
     <string name="aether_tunnel_error">Aether connected, but the phone VPN tunnel could not start. Reconnect and check the app logs.</string>
-    <string name="aether_routing_error">behradNG could not start its routing core for Aether. Check whether the app proxy port is already in use.</string>
+    <string name="aether_routing_error">amierNG could not start its routing core for Aether. Check whether the app proxy port is already in use.</string>
     <string name="aether_native_error">Aether stopped during %1$s (exit code %2$d). Check the network and reconnect.</string>
     <string name="aether_timeout_error">Aether timed out during %1$s. Check the network, endpoint and scan mode, then retry.</string>
     <string name="aether_stage_core">core startup</string>

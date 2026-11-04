@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connection_connecting">Menyambungkan…</string>
+    <string name="connection_status_connected">Tersambung</string>
+    <string name="connection_connecting_hint">Sedang menyambungkan. Tekan untuk membatalkan.</string>
+    <string name="connection_connected_hint">Koneksi berhasil tersambung.</string>
+    <string name="connection_start_hint">Tekan untuk menyambungkan</string>
+    <string name="connection_cancel">Batalkan koneksi</string>
+    <string name="connection_stop">Putuskan VPN</string>
+    <string name="connection_start">Sambungkan VPN</string>
+</resources>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="aether_loading">Memuat…</string>
+    <string name="aether_starting">Menyambungkan ke Aether…</string>
+    <string name="aether_protocol">Protokol</string>
+    <string name="aether_carrier">Transport MASQUE</string>
+    <string name="aether_scan">Mode pemindaian endpoint</string>
+    <string name="aether_ip">Versi IP</string>
+    <string name="aether_noise">Profil obfuskasi</string>
+    <string name="aether_endpoint">Endpoint (IP:port; kosongkan untuk memindai)</string>
+    <string name="aether_dns">DNS tunnel (alamat IP, pisahkan dengan koma)</string>
+    <string name="aether_fragment">Fragmentasi ClientHello HTTP/2</string>
+    <string name="aether_fragment_size">Ukuran fragmen (byte; mis. 16-32)</string>
+    <string name="aether_fragment_delay">Jeda fragmen (milidetik; mis. 2-10)</string>
+    <string name="aether_socks_port">Port proxy lokal Aether (1024-65535)</string>
+    <string name="aether_cancel">Batal</string>
+    <string name="aether_save">Simpan</string>
+    <string name="aether_load_error">Tidak dapat memuat profil Aether ini.</string>
+    <string name="aether_save_error">Tidak dapat menyimpan profil Aether ini. Coba lagi.</string>
+    <string name="aether_invalid_settings">Isi nama dan nilai yang valid untuk semua setelan Aether.</string>
+    <string name="aether_start_error">Aether gagal tersambung. Periksa profil dan jaringan, lalu sambungkan ulang.</string>
+    <string name="aether_unavailable">Aether membutuhkan core bawaannya, Android 8 atau lebih baru, ARM64/ARMv7/x86_64, dan halaman memori 4 KiB.</string>
+    <string name="aether_root_unsupported">Aether mendukung mode VPN dan khusus proxy. Keluar dari mode root untuk memakai profil ini.</string>
+    <string name="aether_standalone_only">Aether harus dipilih sebagai profil tersendiri; tidak bisa menjadi target routing atau anggota rantai.</string>
+    <string name="aether_apply_notice">Setelan yang disimpan berlaku pada koneksi berikutnya. Putuskan lalu sambungkan ulang untuk menerapkannya.</string>
+    <string name="aether_permission_error">Izinkan amierNG membuat koneksi VPN, lalu coba lagi.</string>
+    <string name="aether_vpn_error">amierNG tidak dapat membuat antarmuka VPN. Periksa izin VPN dan setelan per aplikasi.</string>
+    <string name="aether_tunnel_error">Aether tersambung, tetapi tunnel VPN ponsel gagal dimulai. Sambungkan ulang dan periksa log aplikasi.</string>
+    <string name="aether_routing_error">amierNG tidak dapat menjalankan core routing untuk Aether. Periksa apakah port proxy aplikasi sudah dipakai.</string>
+    <string name="aether_native_error">Aether berhenti saat %1$s (kode keluar %2$d). Periksa jaringan lalu sambungkan ulang.</string>
+    <string name="aether_timeout_error">Aether kehabisan waktu saat %1$s. Periksa jaringan, endpoint, dan mode pindai, lalu coba lagi.</string>
+    <string name="aether_stage_core">memulai core</string>
+    <string name="aether_stage_registration">pendaftaran Cloudflare</string>
+    <string name="aether_stage_scan">pemindaian endpoint</string>
+    <string name="aether_stage_transport">handshake tunnel</string>
+</resources>
