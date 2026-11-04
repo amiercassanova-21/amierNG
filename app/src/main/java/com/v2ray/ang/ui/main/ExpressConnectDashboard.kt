@@ -1,5 +1,7 @@
 package com.v2ray.ang.ui.main
 
+import android.net.TrafficStats
+import android.os.Process
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -36,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -61,24 +64,26 @@ import androidx.compose.ui.unit.sp
 import com.v2ray.ang.R
 import com.v2ray.ang.dto.entities.ProfileItem
 import com.v2ray.ang.extension.isComplexType
+import com.v2ray.ang.extension.toSpeedString
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 /**
- * ExpressVPN-inspired hero connection dashboard for behradNG.
+ * ExpressVPN-inspired hero connection dashboard for amierNG.
  */
 @Composable
 fun ExpressConnectDashboard(
     isRunning: Boolean,
     isConnecting: Boolean,
-    statusText: String,
+    statusOverride: String?,
     selectedGuid: String?,
     selectedProfile: ProfileItem?,
     selectedPing: Long,
+    connectedSinceMillis: Long,
     onToggleService: () -> Unit,
     onTestPing: () -> Unit,
     onOpenLocations: () -> Unit,
-    onAddConfig: () -> Unit,
-    onRoutingClick: () -> Unit,
-    onPerAppClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
@@ -170,7 +175,11 @@ fun ExpressConnectDashboard(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = connectionLabel,
+                        text = stringResource(when {
+                            isConnecting -> R.string.connection_connecting
+                            isRunning -> R.string.dashboard_vpn_on
+                            else -> R.string.dashboard_vpn_off
+                        }),
                         style = MaterialTheme.typography.labelMedium.copy(
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.2.sp
@@ -192,7 +201,8 @@ fun ExpressConnectDashboard(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = stringResource(when {
+                // Test progress and results replace the idle hint so they stay visible here.
+                text = statusOverride ?: stringResource(when {
                     isConnecting -> R.string.connection_connecting_hint
                     isRunning -> R.string.connection_connected_hint
                     else -> R.string.connection_start_hint
@@ -200,6 +210,10 @@ fun ExpressConnectDashboard(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+
+            if (isRunning) {
+                ConnectionStatsRow(connectedSinceMillis = connectedSinceMillis, color = statusColor)
+            }
         }
 
         if (selectedProfile?.configType == com.v2ray.ang.enums.EConfigType.SATURN) {
@@ -350,7 +364,7 @@ fun ExpressConnectDashboard(
                 // Location / Server Info
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "SELECTED CONFIGURATION",
+                        text = stringResource(R.string.dashboard_selected_configuration),
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.sp
@@ -360,8 +374,8 @@ fun ExpressConnectDashboard(
 
                     Spacer(modifier = Modifier.height(3.dp))
 
-                    val serverTitle = selectedProfile?.remarks?.ifBlank { "Default Server" }
-                        ?: if (selectedGuid.isNullOrEmpty()) "No server selected" else "Config: ${selectedGuid.take(8)}"
+                    val serverTitle = selectedProfile?.remarks?.ifBlank { stringResource(R.string.dashboard_default_server) }
+                        ?: if (selectedGuid.isNullOrEmpty()) stringResource(R.string.dashboard_no_server_selected) else stringResource(R.string.dashboard_config_short, selectedGuid.take(8))
 
                     Text(
                         text = serverTitle,
@@ -408,8 +422,8 @@ fun ExpressConnectDashboard(
                         // Ping badge
                         val pingText = when {
                             selectedPing > 0L -> "$selectedPing ms"
-                            selectedPing < 0L -> "Timeout"
-                            else -> "Untested"
+                            selectedPing < 0L -> stringResource(R.string.dashboard_ping_timeout)
+                            else -> stringResource(R.string.dashboard_ping_untested)
                         }
                         val pingColor = when {
                             selectedPing > 0L -> activeEmerald
@@ -433,7 +447,7 @@ fun ExpressConnectDashboard(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_flash_on_24dp),
-                        contentDescription = "Test Ping",
+                        contentDescription = stringResource(R.string.dashboard_test_ping),
                         tint = activeEmerald,
                         modifier = Modifier.size(20.dp)
                     )
@@ -442,7 +456,7 @@ fun ExpressConnectDashboard(
                 // Arrow pointing right
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_back_24dp),
-                    contentDescription = "Change Location",
+                    contentDescription = stringResource(R.string.dashboard_change_location),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier
                         .size(20.dp)
@@ -451,130 +465,52 @@ fun ExpressConnectDashboard(
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Express Quick Action Shortcuts Row
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            ExpressActionChip(
-                iconRes = R.drawable.ic_add_24dp,
-                label = "+ Add Config",
-                onClick = onAddConfig,
-                modifier = Modifier.weight(1f)
-            )
-            ExpressActionChip(
-                iconRes = R.drawable.ic_flash_on_24dp,
-                label = "Speed Test",
-                onClick = onTestPing,
-                modifier = Modifier.weight(1f)
-            )
-            ExpressActionChip(
-                iconRes = R.drawable.ic_routing_24dp,
-                label = "Routing",
-                onClick = onRoutingClick,
-                modifier = Modifier.weight(1f)
-            )
-            ExpressActionChip(
-                iconRes = R.drawable.ic_per_apps_24dp,
-                label = "Split Tunnel",
-                onClick = onPerAppClick,
-                modifier = Modifier.weight(1f)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Security & Status Telemetry Card
-        Card(
-            shape = RoundedCornerShape(18.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
-            ),
-            border = BorderStroke(1.dp, darkSurfaceBorder),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_lock_24dp),
-                            contentDescription = null,
-                            tint = if (isRunning) activeEmerald else MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "behradNG Security Shield",
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                    Text(
-                        text = if (isRunning) "ACTIVE" else "STANDBY",
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black),
-                        color = if (isRunning) activeEmerald else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Text(
-                    text = if (statusText.isNotBlank()) statusText else "Client ready. Add or select a configuration to start.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
+/**
+ * Connection duration and current download/upload speed of this app's UID.
+ * In VPN and proxy modes all proxied traffic flows through the core inside this UID.
+ */
 @Composable
-private fun ExpressActionChip(
-    iconRes: Int,
-    label: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f)),
-        modifier = modifier.clickable(onClick = onClick)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp, horizontal = 4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                painter = painterResource(iconRes),
-                contentDescription = label,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 11.sp
-                ),
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+private fun ConnectionStatsRow(connectedSinceMillis: Long, color: Color) {
+    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    var downSpeed by remember { mutableLongStateOf(-1L) }
+    var upSpeed by remember { mutableLongStateOf(-1L) }
+    LaunchedEffect(Unit) {
+        val uid = Process.myUid()
+        // TrafficStats may use binder calls; read it off the main thread.
+        suspend fun read() = withContext(Dispatchers.IO) {
+            TrafficStats.getUidRxBytes(uid) to TrafficStats.getUidTxBytes(uid)
+        }
+        var last = read()
+        while (true) {
+            delay(1000L)
+            val current = read()
+            now = System.currentTimeMillis()
+            val supported = current.first != TrafficStats.UNSUPPORTED.toLong() && last.first != TrafficStats.UNSUPPORTED.toLong()
+            downSpeed = if (supported) (current.first - last.first).coerceAtLeast(0L) else -1L
+            upSpeed = if (supported) (current.second - last.second).coerceAtLeast(0L) else -1L
+            last = current
         }
     }
+
+    val parts = buildList {
+        if (connectedSinceMillis in 1..now) {
+            val seconds = (now - connectedSinceMillis) / 1000L
+            add("⏱ %02d:%02d:%02d".format(seconds / 3600L, seconds / 60L % 60L, seconds % 60L))
+        }
+        if (downSpeed >= 0L && upSpeed >= 0L) {
+            add("↓ ${downSpeed.toSpeedString()}   ↑ ${upSpeed.toSpeedString()}")
+        }
+    }
+    if (parts.isEmpty()) return
+
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(
+        text = parts.joinToString("     "),
+        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+        color = color
+    )
 }

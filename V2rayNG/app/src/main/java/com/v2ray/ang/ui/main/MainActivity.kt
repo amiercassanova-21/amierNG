@@ -117,6 +117,10 @@ class MainActivity : HelperBaseComponentActivity() {
                     is MainAction.EditServer -> editServer(action.guid, action.profile)
                     is MainAction.ShareClipboard -> shareToClipboard(action.guid)
                     is MainAction.ShareFullContent -> shareFullContentAsync(action.guid)
+                    is MainAction.ShareLocked -> {
+                        if (AngConfigManager.shareLocked2Clipboard(this, action.guid) == 0) toastSuccess(R.string.toast_success)
+                        else toastError(R.string.toast_failure)
+                    }
                     else -> mainViewModel.onAction(action)
                 }
             },
@@ -248,6 +252,10 @@ class MainActivity : HelperBaseComponentActivity() {
     }
 
     private fun editServer(guid: String, profile: ProfileItem) {
+        if (profile.locked == true) {
+            toastError(R.string.toast_profile_locked)
+            return
+        }
         val activityClass = when (profile.configType) {
             EConfigType.CUSTOM -> ServerCustomConfigActivity::class.java
             EConfigType.POLICYGROUP -> ServerGroupActivity::class.java

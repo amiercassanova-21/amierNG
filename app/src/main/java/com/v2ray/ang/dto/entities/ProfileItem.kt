@@ -78,6 +78,8 @@ data class ProfileItem(
     var browserDialerMode: String? = null,
     var aetherSettings: AetherSettings? = null,
     var saturnSettings: SaturnSettings? = null,
+    // Imported from an amierNG locked link: usable, but not viewable, editable or shareable.
+    var locked: Boolean? = null,
 ) {
 
     companion object {

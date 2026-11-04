@@ -2,11 +2,14 @@ package com.v2ray.ang.ui.main
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.v2ray.ang.R
 import com.v2ray.ang.dto.entities.ProfileItem
 import com.v2ray.ang.enums.EConfigType
 import com.v2ray.ang.extension.isComplexType
+import com.v2ray.ang.extension.toast
 import com.v2ray.ang.ui.compose.AppDropdownMenuItems
 import com.v2ray.ang.ui.compose.SelectListDialog
 
@@ -48,6 +51,7 @@ internal enum class ServerMenuAction(
 ) {
     ShareQRCode(R.string.share_method_qrcode, isShareAction = true, supportsComplexProfiles = false),
     ShareClipboard(R.string.share_method_clipboard, isShareAction = true, supportsComplexProfiles = false),
+    ShareLocked(R.string.share_method_locked, isShareAction = true, supportsComplexProfiles = false),
     ShareFullContent(R.string.share_method_full_content, isShareAction = true, supportsComplexProfiles = true),
     Edit(R.string.action_edit, isShareAction = false, supportsComplexProfiles = true),
     Delete(R.string.action_delete, isShareAction = false, supportsComplexProfiles = true),
@@ -56,7 +60,10 @@ internal enum class ServerMenuAction(
 internal fun serverMenuActions(
     isComplexProfile: Boolean,
     includeManagementActions: Boolean,
+    isLocked: Boolean = false,
 ): List<ServerMenuAction> = ServerMenuAction.entries.filter { action ->
+    // A locked profile can only be deleted: no sharing, copying or editing.
+    if (isLocked) return@filter includeManagementActions && action == ServerMenuAction.Delete
     (includeManagementActions || action.isShareAction) && (!isComplexProfile || action.supportsComplexProfiles)
 }
 
@@ -86,7 +93,16 @@ fun ShareMethodDialog(
     val menuActions = serverMenuActions(
         isComplexProfile = profile.configType.isComplexType(),
         includeManagementActions = more,
+        isLocked = profile.locked == true,
     )
+    if (menuActions.isEmpty()) {
+        val context = LocalContext.current
+        LaunchedEffect(guid) {
+            context.toast(R.string.toast_profile_locked)
+            onDismiss()
+        }
+        return
+    }
     SelectListDialog(
         options = menuActions,
         optionText = { stringResource(it.labelRes) },
@@ -95,6 +111,7 @@ fun ShareMethodDialog(
             when (action) {
                 ServerMenuAction.ShareQRCode -> onAction(MainAction.ShareQRCode(guid))
                 ServerMenuAction.ShareClipboard -> onAction(MainAction.ShareClipboard(guid))
+                ServerMenuAction.ShareLocked -> onAction(MainAction.ShareLocked(guid))
                 ServerMenuAction.ShareFullContent -> onAction(MainAction.ShareFullContent(guid))
                 ServerMenuAction.Edit -> onAction(MainAction.EditServer(guid, profile))
                 ServerMenuAction.Delete -> onRemove(guid, profile.remarks)

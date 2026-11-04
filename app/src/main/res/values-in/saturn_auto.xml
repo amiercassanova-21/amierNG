@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="saturn_automatic">Otomatis</string>
+    <string name="saturn_custom">Bridge kustom</string>
+    <string name="saturn_bridge_source">Sumber bridge</string>
+    <string name="saturn_country_list">Negara keluar</string>
+    <string name="saturn_auto_hint">Tersambung dulu ke Cloudflare Tunnel (Gratis), lalu ke Tor dengan bridge obfs4 dan pemilihan negara keluar otomatis. Hanya TCP. Sambungkan ulang setelah mengubah setelan.</string>
+    <string name="saturn_dns_error">Saturn tidak dapat menjangkau Cloudflare Tunnel. Periksa URL Tunnel dan IP bootstrap.</string>
+    <string name="saturn_bridges_error">Tidak ada bridge obfs4 yang dapat dijangkau. Coba Pindai mendalam atau bridge kustom.</string>
+    <string name="saturn_bootstrap_error">Saturn tidak dapat menyelesaikan koneksi Tor. Coba negara Otomatis, Pindai mendalam, atau bridge kustom.</string>
+    <string name="saturn_core_exit">Core Saturn berhenti saat memulai Tor (kode keluar %1$d).</string>
+    <string name="saturn_native_error">Saturn tidak dapat menjalankan core native-nya. Periksa log aplikasi.</string>
+    <string-array name="saturn_country_names">
+        <item>Uni Emirat Arab</item>
+        <item>Austria</item>
+        <item>Australia</item>
+        <item>Azerbaijan</item>
+        <item>Bangladesh</item>
+        <item>Belgia</item>
+        <item>Bulgaria</item>
+        <item>Kanada</item>
+        <item>Swiss</item>
+        <item>Chili</item>
+        <item>Tiongkok</item>
+        <item>Kosta Rika</item>
+        <item>Siprus</item>
+        <item>Ceko</item>
+        <item>Jerman</item>
+        <item>Denmark</item>
+        <item>Spanyol</item>
+        <item>Finlandia</item>
+        <item>Prancis</item>
+        <item>Inggris Raya</item>
+        <item>Yunani</item>
+        <item>Hong Kong DAK Tiongkok</item>
+        <item>Kroasia</item>
+        <item>Hungaria</item>
+        <item>Indonesia</item>
+        <item>Israel</item>
+        <item>Islandia</item>
+        <item>Italia</item>
+        <item>Jepang</item>
+        <item>Korea Selatan</item>
+        <item>Luksemburg</item>
+        <item>Moldova</item>
+        <item>Meksiko</item>
+        <item>Malaysia</item>
+        <item>Belanda</item>
+        <item>Norwegia</item>
+        <item>Selandia Baru</item>
+        <item>Peru</item>
+        <item>Pakistan</item>
+        <item>Polandia</item>
+        <item>Portugal</item>
+        <item>Rumania</item>
+        <item>Serbia</item>
+        <item>Arab Saudi</item>
+        <item>Seychelles</item>
+        <item>Swedia</item>
+        <item>Singapura</item>
+        <item>Turki</item>
+        <item>Taiwan</item>
+        <item>Ukraina</item>
+        <item>Amerika Serikat</item>
+        <item>Afrika Selatan</item>
+    </string-array>
+</resources>

@@ -136,6 +136,8 @@ class MainViewModel(
             MainServiceEvent.StateStartSuccess -> {
                 toastSuccess(R.string.toast_services_success)
                 updateRunningState(true)
+                // Check the new connection right away so its delay is shown without a manual tap.
+                testCurrentServerRealPing()
             }
 
             is MainServiceEvent.StateStartFailure -> {
@@ -315,7 +317,8 @@ class MainViewModel(
             MainAction.LocateSelectedServer,
             is MainAction.EditServer,
             is MainAction.ShareClipboard,
-            is MainAction.ShareFullContent -> {
+            is MainAction.ShareFullContent,
+            is MainAction.ShareLocked -> {
                 // Handled by Activity via its onAction lambda
             }
         }

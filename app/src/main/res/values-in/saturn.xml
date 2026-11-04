@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="saturn_doh">URL Cloudflare Tunnel (Gratis)</string>
+    <string name="saturn_carrier">Versi HTTP</string>
+    <string name="saturn_bootstrap">IP bootstrap Cloudflare Tunnel (pisahkan dengan koma)</string>
+    <string name="saturn_bridges">Bridge obfs4 kustom (satu per baris)</string>
+    <string name="saturn_scan">Mode pengujian bridge</string>
+    <string name="saturn_turbo">Pindai turbo</string>
+    <string name="saturn_deep">Pindai mendalam</string>
+    <string name="saturn_country">Negara keluar (auto atau kode dua huruf)</string>
+    <string name="saturn_hint">Tersambung dulu ke Cloudflare Tunnel (Gratis), lalu melalui Tor ke negara keluar. Hanya TCP. Perubahan setelan memerlukan sambung ulang.</string>
+    <string name="saturn_loading">Memuat Saturn…</string>
+    <string name="saturn_starting">Memulai Saturn…</string>
+    <string name="saturn_start_error">Saturn gagal tersambung. Periksa Cloudflare Tunnel, bridge, dan negara keluar.</string>
+    <string name="saturn_invalid_settings">Periksa nama, URL Cloudflare Tunnel, IP bootstrap, baris bridge obfs4, dan kode negara.</string>
+    <string name="saturn_load_error">Tidak dapat memuat profil Saturn.</string>
+    <string name="saturn_save_error">Tidak dapat menyimpan profil Saturn.</string>
+    <string name="saturn_unavailable">Saturn membutuhkan Android 8+ dan core native yang didukung perangkat ini.</string>
+    <string name="saturn_root_unsupported">Saturn tidak tersedia dalam mode root.</string>
+    <string name="saturn_permission_error">Berikan izin VPN sebelum memulai Saturn.</string>
+    <string name="saturn_vpn_error">Tidak dapat membuat antarmuka VPN Saturn.</string>
+    <string name="saturn_routing_error">Tidak dapat memulai routing Saturn.</string>
+    <string name="saturn_tunnel_error">Tidak dapat memulai tunnel VPN Saturn.</string>
+    <string name="saturn_aether_section">Setelan Aether</string>
+    <string name="saturn_aether_protocol">Protokol</string>
+    <string name="saturn_aether_carrier">Carrier</string>
+    <string name="saturn_urnetwork_section">Setelan URnetwork</string>
+    <string name="saturn_ur_agree_terms">Saya menyetujui SYARAT DAN KETENTUAN URnetwork</string>
+    <string name="saturn_ur_terms_link">SYARAT DAN KETENTUAN</string>
+    <string name="saturn_ur_create_account">Buat Akun Cepat</string>
+    <string name="saturn_ur_account_active">Akun Aktif: %1$s</string>
+    <string name="saturn_ur_reset_account">Reset Akun</string>
+    <string name="saturn_ur_mode">Mode</string>
+    <string name="saturn_ur_carrier">Carrier</string>
+    <string name="saturn_ur_locations">Lokasi Server</string>
+    <string name="saturn_ur_update_locations">Perbarui daftar</string>
+    <string name="saturn_ur_terms_required">Anda harus menyetujui Syarat dan Ketentuan untuk membuat akun.</string>
+    <string name="saturn_chain_hint">Tersambung dulu ke Aether (Cloudflare Tunnel), lalu dirantai ke URnetwork untuk akses yang cepat dan privat.</string>
+    <string name="saturn_aether_error">Saturn tidak dapat tersambung ke Aether (Cloudflare Tunnel).</string>
+    <string name="saturn_urnetwork_error">Saturn tidak dapat merantai ke URnetwork. Periksa kredensial akun atau lokasi server.</string>
+    <string name="saturn_exit_error">Uji koneksi proxy Saturn gagal.</string>
+    <string name="saturn_ur_remaining_data">Sisa 30 GB</string>
+    <string name="saturn_ur_quota_info">Jatah Harian: 30 GB</string>
+</resources>
