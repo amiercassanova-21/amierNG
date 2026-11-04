@@ -50,8 +50,41 @@ object AngConfigManager {
             EConfigType.WIREGUARD.protocolScheme to WireguardFmt::parse,
             EConfigType.HYSTERIA2.protocolScheme to Hysteria2Fmt::parse,
             AppConfig.HY2 to Hysteria2Fmt::parse,
+            LockLinkCodec.SCHEME to ::parseLockedLink,
         )
     }
+
+    /** Decrypts an amierNG locked link and parses the inner share URI as a locked profile. */
+    private fun parseLockedLink(link: String): ProfileItem? {
+        val inner = LockLinkCodec.decode(link) ?: return null
+        if (inner.startsWith(LockLinkCodec.SCHEME)) return null
+        val parser = configFmtParsers.entries.firstOrNull { inner.startsWith(it.key) }?.value ?: return null
+        return parser(inner)?.apply { locked = true }
+    }
+
+    /**
+     * Copies a locked link for an unlocked, single-server profile.
+     *
+     * @return 0 on success, -1 when the profile is locked, complex or cannot be shared.
+     */
+    fun shareLocked2Clipboard(context: Context, guid: String): Int {
+        try {
+            val conf = shareConfig(guid)
+            if (TextUtils.isEmpty(conf)) return -1
+            Utils.setClipboard(context, LockLinkCodec.encode(conf))
+        } catch (e: Exception) {
+            LogUtil.e(AppConfig.TAG, "Failed to share locked link to clipboard", e)
+            return -1
+        }
+        return 0
+    }
+
+    /** True when [content] contains the server address of any locked profile. */
+    private fun revealsLockedServer(content: String): Boolean =
+        MmkvManager.decodeAllServerList().any { guid ->
+            val profile = MmkvManager.decodeServerConfig(guid)
+            profile?.locked == true && !profile.server.isNullOrBlank() && content.contains(profile.server.orEmpty())
+        }
 
     /**
      * Shares the configuration to the clipboard.
@@ -135,6 +168,7 @@ object AngConfigManager {
         try {
             if (guid == null) return -1
             val profile = MmkvManager.decodeServerConfig(guid)
+            if (profile?.locked == true) return -1
             if (profile?.configType == EConfigType.SATURN) {
                 Utils.setClipboard(context, EConfigType.SATURN.protocolScheme + com.v2ray.ang.fmt.SaturnFmt.toUri(profile))
                 return 0
@@ -144,7 +178,8 @@ object AngConfigManager {
                 return 0
             }
             val result = CoreConfigManager.getV2rayConfig(context, guid)
-            if (result.status) {
+            // A policy group or proxy chain may embed a locked member's server details.
+            if (result.status && !revealsLockedServer(result.content)) {
                 Utils.setClipboard(context, result.content)
             } else {
                 return -1
@@ -165,6 +200,7 @@ object AngConfigManager {
     private fun shareConfig(guid: String): String {
         try {
             val config = MmkvManager.decodeServerConfig(guid) ?: return ""
+            if (config.locked == true) return ""
 
             return config.configType.protocolScheme + when (config.configType) {
                 EConfigType.SATURN -> com.v2ray.ang.fmt.SaturnFmt.toUri(config)
@@ -636,6 +672,7 @@ object AngConfigManager {
      * @return The generated description.
      */
     fun generateDescription(profile: ProfileItem): String {
+        if (profile.locked == true) return "\uD83D\uDD12"
         // Hide xxx:xxx:***/xxx.xxx.xxx.***
         val server = profile.server
         val port = profile.serverPort

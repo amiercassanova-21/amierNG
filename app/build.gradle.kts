@@ -16,6 +16,12 @@ android {
         versionCode = 4000775
         versionName = "3.0.0"
         buildConfigField("String", "DISTRIBUTION", "\"amierNG\"")
+        // Locked-link AES key (base64, 32 bytes) from the AMIERNG_LOCK_KEY Actions secret.
+        // The fallback is a public development key so builds without the secret still compile;
+        // links made with it only open in builds that also lack the secret.
+        val lockKey = System.getenv("AMIERNG_LOCK_KEY")?.trim()?.takeIf { it.isNotEmpty() }
+            ?: "NpqzMMlHpq1kWIEZd4OTpDHXykDWKFbF1z7pa/vpp9E="
+        buildConfigField("String", "LOCK_KEY", "\"$lockKey\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -365,6 +365,8 @@
     <string name="share_method_qrcode">Kode QR</string>
     <string name="share_method_clipboard">Salin tautan profil</string>
     <string name="share_method_full_content">Salin konfigurasi lengkap</string>
+    <string name="share_method_locked">Salin link terkunci (khusus amierNG)</string>
+    <string name="toast_profile_locked">Profil ini terkunci</string>
     <string name="action_edit">Edit</string>
     <string name="action_delete">Hapus</string>
     <string name="action_close">Tutup</string>

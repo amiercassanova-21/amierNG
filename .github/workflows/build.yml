@@ -30,6 +30,8 @@ jobs:
       APP_KEYSTORE_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.APP_KEYSTORE_PASSWORD || '' }}
       APP_KEYSTORE_ALIAS: ${{ github.event_name != 'pull_request' && secrets.APP_KEYSTORE_ALIAS || '' }}
       APP_KEY_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.APP_KEY_PASSWORD || '' }}
+      # Same-repository PR builds also get this secret so their locked links match releases.
+      AMIERNG_LOCK_KEY: ${{ secrets.AMIERNG_LOCK_KEY }}
 
     steps:
     - name: Checkout code
