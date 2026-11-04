@@ -449,6 +449,8 @@
     <string name="connection_test_empty_message">tidak ada detail</string>
     <string name="value_unknown">tidak diketahui</string>
     <string name="title_configs">Konfigurasi</string>
+    <string name="dashboard_vpn_on">VPN AKTIF</string>
+    <string name="dashboard_vpn_off">VPN MATI</string>
     <string name="tab_connect">Sambungkan</string>
     <string name="dashboard_selected_configuration">KONFIGURASI TERPILIH</string>
     <string name="dashboard_default_server">Server Bawaan</string>

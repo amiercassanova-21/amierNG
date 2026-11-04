@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -36,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.v2ray.ang.AppConfig
 import com.v2ray.ang.R
 import com.v2ray.ang.dto.entities.ProfileItem
 import com.v2ray.ang.handler.MmkvManager
@@ -86,8 +88,18 @@ fun MainScreen(
     val selectedProfile = remember(selectedGuid, groups) {
         selectedGuid?.let { MmkvManager.decodeServerConfig(it) }
     }
-    val selectedPing = remember(selectedGuid, groups, uiState.isTesting, uiState.status) {
+    val storedPing = remember(selectedGuid, groups, uiState.isTesting, uiState.status) {
         selectedGuid?.let { MmkvManager.decodeServerAffiliationInfo(it)?.testDelayMillis } ?: 0L
+    }
+    // Delay from the latest live connection test; shown on the card while connected.
+    var liveDelay by remember { mutableLongStateOf(0L) }
+    LaunchedEffect(selectedGuid, isRunning) { liveDelay = 0L }
+    LaunchedEffect(uiState.status) {
+        (uiState.status as? MainStatus.ConnectionTest)?.let { liveDelay = if (it.result.delayMillis >= 0L) it.result.delayMillis else -1L }
+    }
+    val selectedPing = if (isRunning && liveDelay != 0L) liveDelay else storedPing
+    val connectedSince = remember(isRunning) {
+        if (isRunning) MmkvManager.decodeSettingsLong(AppConfig.PREF_CONNECTED_SINCE, 0L) else 0L
     }
     // Only test progress/results override the dashboard hint; idle and connection states use its own text.
     val dashboardStatus = when (uiState.status) {
@@ -236,6 +248,7 @@ fun MainScreen(
                     selectedGuid = selectedGuid,
                     selectedProfile = selectedProfile,
                     selectedPing = selectedPing,
+                    connectedSinceMillis = connectedSince,
                     onToggleService = { onAction(MainAction.ToggleService) },
                     // Running: check the live connection; stopped: measure real delay for the current group.
                     onTestPing = { onAction(if (isRunning) MainAction.TestCurrentServer else MainAction.TestRealAllServers) },

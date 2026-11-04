@@ -136,6 +136,8 @@ class MainViewModel(
             MainServiceEvent.StateStartSuccess -> {
                 toastSuccess(R.string.toast_services_success)
                 updateRunningState(true)
+                // Check the new connection right away so its delay is shown without a manual tap.
+                testCurrentServerRealPing()
             }
 
             is MainServiceEvent.StateStartFailure -> {

@@ -176,6 +176,10 @@ object CoreServiceManager {
         if (!isRunning()) {
             error("Core failed to start")
         }
+        if (!isReload) {
+            // Read by the UI process (multi-process MMKV) to show the connection duration.
+            MmkvManager.encodeSettings(AppConfig.PREF_CONNECTED_SINCE, System.currentTimeMillis())
+        }
 
         if (browserDialer != null) {
             browserDialer!!.stop()

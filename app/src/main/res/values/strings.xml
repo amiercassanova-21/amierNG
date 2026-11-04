@@ -564,6 +564,8 @@
     <string name="title_configs">Configs</string>
 
     <!-- amierNG dashboard, drawer and About texts -->
+    <string name="dashboard_vpn_on">VPN ACTIVE</string>
+    <string name="dashboard_vpn_off">VPN OFF</string>
     <string name="tab_connect">Connect</string>
     <string name="dashboard_selected_configuration">SELECTED CONFIGURATION</string>
     <string name="dashboard_default_server">Default Server</string>

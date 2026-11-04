@@ -1,5 +1,7 @@
 package com.v2ray.ang.ui.main
 
+import android.net.TrafficStats
+import android.os.Process
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -36,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -61,6 +64,10 @@ import androidx.compose.ui.unit.sp
 import com.v2ray.ang.R
 import com.v2ray.ang.dto.entities.ProfileItem
 import com.v2ray.ang.extension.isComplexType
+import com.v2ray.ang.extension.toSpeedString
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 /**
  * ExpressVPN-inspired hero connection dashboard for amierNG.
@@ -73,6 +80,7 @@ fun ExpressConnectDashboard(
     selectedGuid: String?,
     selectedProfile: ProfileItem?,
     selectedPing: Long,
+    connectedSinceMillis: Long,
     onToggleService: () -> Unit,
     onTestPing: () -> Unit,
     onOpenLocations: () -> Unit,
@@ -167,7 +175,11 @@ fun ExpressConnectDashboard(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = connectionLabel,
+                        text = stringResource(when {
+                            isConnecting -> R.string.connection_connecting
+                            isRunning -> R.string.dashboard_vpn_on
+                            else -> R.string.dashboard_vpn_off
+                        }),
                         style = MaterialTheme.typography.labelMedium.copy(
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.2.sp
@@ -198,6 +210,10 @@ fun ExpressConnectDashboard(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+
+            if (isRunning) {
+                ConnectionStatsRow(connectedSinceMillis = connectedSinceMillis, color = statusColor)
+            }
         }
 
         if (selectedProfile?.configType == com.v2ray.ang.enums.EConfigType.SATURN) {
@@ -451,4 +467,50 @@ fun ExpressConnectDashboard(
 
         Spacer(modifier = Modifier.height(16.dp))
     }
+}
+
+/**
+ * Connection duration and current download/upload speed of this app's UID.
+ * In VPN and proxy modes all proxied traffic flows through the core inside this UID.
+ */
+@Composable
+private fun ConnectionStatsRow(connectedSinceMillis: Long, color: Color) {
+    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    var downSpeed by remember { mutableLongStateOf(-1L) }
+    var upSpeed by remember { mutableLongStateOf(-1L) }
+    LaunchedEffect(Unit) {
+        val uid = Process.myUid()
+        // TrafficStats may use binder calls; read it off the main thread.
+        suspend fun read() = withContext(Dispatchers.IO) {
+            TrafficStats.getUidRxBytes(uid) to TrafficStats.getUidTxBytes(uid)
+        }
+        var last = read()
+        while (true) {
+            delay(1000L)
+            val current = read()
+            now = System.currentTimeMillis()
+            val supported = current.first != TrafficStats.UNSUPPORTED.toLong() && last.first != TrafficStats.UNSUPPORTED.toLong()
+            downSpeed = if (supported) (current.first - last.first).coerceAtLeast(0L) else -1L
+            upSpeed = if (supported) (current.second - last.second).coerceAtLeast(0L) else -1L
+            last = current
+        }
+    }
+
+    val parts = buildList {
+        if (connectedSinceMillis in 1..now) {
+            val seconds = (now - connectedSinceMillis) / 1000L
+            add("⏱ %02d:%02d:%02d".format(seconds / 3600L, seconds / 60L % 60L, seconds % 60L))
+        }
+        if (downSpeed >= 0L && upSpeed >= 0L) {
+            add("↓ ${downSpeed.toSpeedString()}   ↑ ${upSpeed.toSpeedString()}")
+        }
+    }
+    if (parts.isEmpty()) return
+
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(
+        text = parts.joinToString("     "),
+        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+        color = color
+    )
 }
