@@ -174,8 +174,9 @@ class SaturnSession {
             urProcess = proc
 
             val readyDeferred = CompletableDeferred<Boolean>()
+            // Shared with the startup check below; StringBuffer because the log pumper appends on IO.
+            val capturedErrors = StringBuffer()
             owner.launch(Dispatchers.IO + CoroutineName("UrnetworkLogPumper")) {
-                val capturedErrors = StringBuilder()
                 try {
                     proc.inputStream.bufferedReader().use { reader ->
                         while (isActive) {
