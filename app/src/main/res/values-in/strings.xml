@@ -449,6 +449,7 @@
     <string name="connection_test_empty_message">tidak ada detail</string>
     <string name="value_unknown">tidak diketahui</string>
     <string name="title_configs">Konfigurasi</string>
+    <string name="tab_connect">Sambungkan</string>
     <string name="dashboard_selected_configuration">KONFIGURASI TERPILIH</string>
     <string name="dashboard_default_server">Server Bawaan</string>
     <string name="dashboard_no_server_selected">Belum ada server dipilih</string>
@@ -457,14 +458,6 @@
     <string name="dashboard_ping_untested">Belum diuji</string>
     <string name="dashboard_test_ping">Uji Ping</string>
     <string name="dashboard_change_location">Ganti Lokasi</string>
-    <string name="dashboard_add_config">+ Tambah Config</string>
-    <string name="dashboard_speed_test">Uji Kecepatan</string>
-    <string name="dashboard_routing">Routing</string>
-    <string name="dashboard_split_tunnel">Split Tunnel</string>
-    <string name="dashboard_security_shield">Perisai Keamanan %1$s</string>
-    <string name="dashboard_shield_active">AKTIF</string>
-    <string name="dashboard_shield_standby">SIAGA</string>
-    <string name="dashboard_client_ready">Aplikasi siap. Tambah atau pilih konfigurasi untuk mulai.</string>
     <string name="drawer_tagline">Perlindungan VPN Cepat &amp; Aman</string>
     <string name="about_tagline">Klien VPN Cepat &amp; Aman</string>
 </resources>

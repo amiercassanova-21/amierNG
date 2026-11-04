@@ -1,5 +1,6 @@
 package com.v2ray.ang.ui.main
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,10 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
@@ -21,17 +26,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.v2ray.ang.R
 import com.v2ray.ang.dto.entities.ProfileItem
-import com.v2ray.ang.ui.compose.LocalDarkTheme
+import com.v2ray.ang.handler.MmkvManager
 import com.v2ray.ang.ui.compose.QRCodeDialog
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -52,9 +59,10 @@ fun MainScreen(
     val confirmRemove = uiState.confirmRemove
     val shareQRCodeBitmap = uiState.shareQRCodeBitmap
 
-    val isDarkTheme = LocalDarkTheme.current
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    // 0 = Connect dashboard, 1 = config list.
+    var mainTab by rememberSaveable { mutableIntStateOf(0) }
     var showSearch by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var showDelAllConfirm by remember { mutableStateOf(false) }
@@ -71,6 +79,20 @@ fun MainScreen(
         } else {
             onAction(MainAction.RemoveServer(guid))
         }
+    }
+
+    BackHandler(enabled = mainTab == 1) { mainTab = 0 }
+
+    val selectedProfile = remember(selectedGuid, groups) {
+        selectedGuid?.let { MmkvManager.decodeServerConfig(it) }
+    }
+    val selectedPing = remember(selectedGuid, groups, uiState.isTesting, uiState.status) {
+        selectedGuid?.let { MmkvManager.decodeServerAffiliationInfo(it)?.testDelayMillis } ?: 0L
+    }
+    // Only test progress/results override the dashboard hint; idle and connection states use its own text.
+    val dashboardStatus = when (uiState.status) {
+        is MainStatus.Testing, is MainStatus.TestProgress, is MainStatus.ConnectionTest -> displayText
+        else -> null
     }
 
     val pagerState = rememberPagerState(
@@ -187,24 +209,40 @@ fun MainScreen(
                 )
             },
             bottomBar = {
-                val isSaturn = remember(selectedGuid) {
-                    val config = selectedGuid?.let { com.v2ray.ang.handler.MmkvManager.decodeServerConfig(it) }
-                    config?.configType == com.v2ray.ang.enums.EConfigType.SATURN
+                NavigationBar {
+                    NavigationBarItem(
+                        selected = mainTab == 0,
+                        onClick = { mainTab = 0 },
+                        icon = { Icon(painterResource(R.drawable.ic_shield_24dp), contentDescription = null) },
+                        label = { Text(stringResource(R.string.tab_connect)) }
+                    )
+                    NavigationBarItem(
+                        selected = mainTab == 1,
+                        onClick = { mainTab = 1 },
+                        icon = { Icon(painterResource(R.drawable.ic_globe_24dp), contentDescription = null) },
+                        label = { Text(stringResource(R.string.title_configs)) }
+                    )
                 }
-                val saturnRemainingData = if (isSaturn) stringResource(R.string.saturn_ur_remaining_data) else null
-                MainBottomBar(
-                    displayText = displayText,
-                    isRunning = isRunning,
-                    isDarkTheme = isDarkTheme,
-                    saturnRemainingData = saturnRemainingData,
-                    onAction = onAction
-                )
             },
             floatingActionButton = {},
         ) { innerPadding ->
             val layoutDirection = LocalLayoutDirection.current
 
-            if (groups.isNotEmpty()) {
+            if (mainTab == 0) {
+                ExpressConnectDashboard(
+                    isRunning = isRunning,
+                    isConnecting = uiState.isConnecting,
+                    statusOverride = dashboardStatus,
+                    selectedGuid = selectedGuid,
+                    selectedProfile = selectedProfile,
+                    selectedPing = selectedPing,
+                    onToggleService = { onAction(MainAction.ToggleService) },
+                    // Running: check the live connection; stopped: measure real delay for the current group.
+                    onTestPing = { onAction(if (isRunning) MainAction.TestCurrentServer else MainAction.TestRealAllServers) },
+                    onOpenLocations = { mainTab = 1 },
+                    modifier = Modifier.padding(innerPadding)
+                )
+            } else if (groups.isNotEmpty()) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -244,7 +282,10 @@ fun MainScreen(
                             searchQuery = searchQuery,
                             lazyListStates = lazyListStates,
                             lazyGridStates = lazyGridStates,
-                            onSelectServer = { guid -> onAction(MainAction.SelectServer(guid)) },
+                            onSelectServer = { guid ->
+                                onAction(MainAction.SelectServer(guid))
+                                mainTab = 0
+                            },
                             onEditServer = { guid, profile -> onAction(MainAction.EditServer(guid, profile)) },
                             onShareServer = { guid, profile ->
                                 shareTarget = Triple(guid, profile, false)

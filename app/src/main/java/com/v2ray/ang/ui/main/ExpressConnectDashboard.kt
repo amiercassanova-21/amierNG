@@ -69,16 +69,13 @@ import com.v2ray.ang.extension.isComplexType
 fun ExpressConnectDashboard(
     isRunning: Boolean,
     isConnecting: Boolean,
-    statusText: String,
+    statusOverride: String?,
     selectedGuid: String?,
     selectedProfile: ProfileItem?,
     selectedPing: Long,
     onToggleService: () -> Unit,
     onTestPing: () -> Unit,
     onOpenLocations: () -> Unit,
-    onAddConfig: () -> Unit,
-    onRoutingClick: () -> Unit,
-    onPerAppClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
@@ -192,7 +189,8 @@ fun ExpressConnectDashboard(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = stringResource(when {
+                // Test progress and results replace the idle hint so they stay visible here.
+                text = statusOverride ?: stringResource(when {
                     isConnecting -> R.string.connection_connecting_hint
                     isRunning -> R.string.connection_connected_hint
                     else -> R.string.connection_start_hint
@@ -451,130 +449,6 @@ fun ExpressConnectDashboard(
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Express Quick Action Shortcuts Row
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            ExpressActionChip(
-                iconRes = R.drawable.ic_add_24dp,
-                label = stringResource(R.string.dashboard_add_config),
-                onClick = onAddConfig,
-                modifier = Modifier.weight(1f)
-            )
-            ExpressActionChip(
-                iconRes = R.drawable.ic_flash_on_24dp,
-                label = stringResource(R.string.dashboard_speed_test),
-                onClick = onTestPing,
-                modifier = Modifier.weight(1f)
-            )
-            ExpressActionChip(
-                iconRes = R.drawable.ic_routing_24dp,
-                label = stringResource(R.string.dashboard_routing),
-                onClick = onRoutingClick,
-                modifier = Modifier.weight(1f)
-            )
-            ExpressActionChip(
-                iconRes = R.drawable.ic_per_apps_24dp,
-                label = stringResource(R.string.dashboard_split_tunnel),
-                onClick = onPerAppClick,
-                modifier = Modifier.weight(1f)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Security & Status Telemetry Card
-        Card(
-            shape = RoundedCornerShape(18.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
-            ),
-            border = BorderStroke(1.dp, darkSurfaceBorder),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_lock_24dp),
-                            contentDescription = null,
-                            tint = if (isRunning) activeEmerald else MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = stringResource(R.string.dashboard_security_shield, stringResource(R.string.app_name)),
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                    Text(
-                        text = stringResource(if (isRunning) R.string.dashboard_shield_active else R.string.dashboard_shield_standby),
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black),
-                        color = if (isRunning) activeEmerald else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Text(
-                    text = if (statusText.isNotBlank()) statusText else stringResource(R.string.dashboard_client_ready),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
         Spacer(modifier = Modifier.height(16.dp))
-    }
-}
-
-@Composable
-private fun ExpressActionChip(
-    iconRes: Int,
-    label: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f)),
-        modifier = modifier.clickable(onClick = onClick)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp, horizontal = 4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                painter = painterResource(iconRes),
-                contentDescription = label,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 11.sp
-                ),
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
     }
 }
